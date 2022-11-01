@@ -1,69 +1,47 @@
-import throttle from 'lodash.throttle';
-import save from './storage';
-import load from './storage';
-const STORAGE_KEY = 'feedback-form-state';
-const refs = {
-  form: document.querySelector('.feedback-form'),
-  submit: document.querySelector('.feedback-form'),
-  inputEmail: document.querySelector('input'),
-  inputMessage: document.querySelector('textarea'),
-};
-
-// console.log(inputEmail.value);
+import { save, load } from './storage.js';
 
 const formData = {};
-refs.form.addEventListener('input', throttle(onSaveMessage, 300));
-refs.submit.addEventListener('submit', onSubmitMessage);
+const refs = {
+  form: document.querySelector('.feedback-form'),
+  STORAGE_KEY: 'feedback-form-state',
+};
 
-onLoadTextArea();
-
-function onSaveMessage(e) {
-  formData[e.target.name] = e.target.value;
-  // save(STORAGE_KEY, formData);
-  // localStorage.setItem('feedback-form-state', JSON.stringify(formData));
-  // console.log(formData);
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-  } catch (error) {
-    console.error('Set state error: ', error.message);
-  }
-}
-
-function onLoadTextArea() {
-  const savedFormData = JSON.parse(localStorage.getItem('feedback-form-state'));
-  if (savedFormData) {
-    refs.inputEmail.value = savedFormData.email;
-    refs.inputMessage.value = savedFormData.message;
-  }
-
-  //   console.log(refs.inputMessage.value);
-  console.log(savedFormData);
-}
-
+refs.form.addEventListener('input', onSaveInput);
+refs.form.addEventListener('submit', onSubmitMessage);
+// window.addEventListener('load', onLoadInput);
+onLoadInput();
 function onSubmitMessage(e) {
   e.preventDefault();
   e.currentTarget.reset();
-  // if (e) {
-  // console.log(formData);
-  // }
-  localStorage.removeItem('feedback-form-state');
 }
 
-// const save = (key, value) => {
-//   try {
-//     const serializedState = JSON.stringify(value);
-//     localStorage.setItem(key, serializedState);
-//   } catch (error) {
-//     console.error('Set state error: ', error.message);
-//   }
-// };
+function onSaveInput(e) {
+  // formData[e.target.name] = e.target.value;
+  // save(refs.STORAGE_KEY, formData);
 
-// const load = key => {
-//   try {
-//     const serializedState = localStorage.getItem(key);
-//     return serializedState === null ? undefined : JSON.parse(serializedState);
-//   } catch (error) {
-//     console.error('Get state error: ', error.message);
-//   }
-// };
+  save(refs.STORAGE_KEY, {
+    email: refs.form.email.value,
+    message: refs.form.message.value,
+  });
+  // console.log(save(refs.STORAGE_KEY, formData));
+  // localStorage.setItem(STORAGE_KEY);
+  // console.log(formData);
+  // return formData;
+}
+
+function onLoadInput() {
+  const loadInput = load(refs.STORAGE_KEY);
+  // if (loadInput.email) {
+  //   refs.form.email.value = loadInput.email;
+  //   refs.form.message.value = loadInput.message;
+  //   console.log(refs.form.email.value);
+  // }
+  try {
+    refs.form.email.value = loadInput.email;
+    refs.form.message.value = loadInput.message;
+  } catch (error) {
+    // console.log('Local Storage is empty');
+  }
+}
+
+// console.log(formData);
