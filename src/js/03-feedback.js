@@ -31,31 +31,14 @@ function onSaveMessage(e) {
 }
 
 function onLoadTextArea() {
-  try {
-    const savedFormData = JSON.parse(
-      localStorage.getItem('feedback-form-state')
-    );
-    if (savedFormData === undefined) {
-      return;
-    } else {
-      refs.inputEmail.value = savedFormData.email;
-      refs.inputMessage.value = savedFormData.message;
-    }
-  } catch (error) {
-    console.error('Get state error: ', error.message);
+  const savedFormData = JSON.parse(localStorage.getItem('feedback-form-state'));
+  if (savedFormData) {
+    refs.inputEmail.value = savedFormData.email;
+    refs.inputMessage.value = savedFormData.message;
   }
+
   //   console.log(refs.inputMessage.value);
   console.log(savedFormData);
-
-  // load('feedback-form-state');
-
-  // try {
-  //   const serializedState = localStorage.getItem(STORAGE_KEY);
-  //   return serializedState === null ? undefined : JSON.parse(serializedState);
-  // } catch (error) {
-  //   console.error('Get state error: ', error.message);
-  // }
-  // console.log(localStorage.getItem(STORAGE_KEY));
 }
 
 function onSubmitMessage(e) {
