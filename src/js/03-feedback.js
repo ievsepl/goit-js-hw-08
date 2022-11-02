@@ -16,10 +16,10 @@ function onSubmitMessage(e) {
   if (refs.form.email.value && refs.form.message.value) {
     console.log(formData);
     clean(refs.STORAGE_KEY);
+    e.currentTarget.reset();
   } else {
     alert('all field s should be fill');
   }
-  e.currentTarget.reset();
 }
 
 function onSaveInput() {
