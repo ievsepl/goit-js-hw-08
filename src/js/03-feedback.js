@@ -1,32 +1,35 @@
-import { save, load } from './storage.js';
+import throttle from 'lodash.throttle';
+import { save, load, clean } from './storage.js';
 
-const formData = {};
+let formData = {};
 const refs = {
   form: document.querySelector('.feedback-form'),
   STORAGE_KEY: 'feedback-form-state',
 };
 
-refs.form.addEventListener('input', onSaveInput);
+refs.form.addEventListener('input', throttle(onSaveInput, 300));
 refs.form.addEventListener('submit', onSubmitMessage);
 // window.addEventListener('load', onLoadInput);
 onLoadInput();
 function onSubmitMessage(e) {
   e.preventDefault();
+  if (refs.form.email.value && refs.form.message.value) {
+    console.log(formData);
+    clean(refs.STORAGE_KEY);
+  } else {
+    alert('all field s should be fill');
+  }
   e.currentTarget.reset();
 }
 
-function onSaveInput(e) {
+function onSaveInput() {
   // formData[e.target.name] = e.target.value;
   // save(refs.STORAGE_KEY, formData);
-
-  save(refs.STORAGE_KEY, {
+  formData = {
     email: refs.form.email.value,
     message: refs.form.message.value,
-  });
-  // console.log(save(refs.STORAGE_KEY, formData));
-  // localStorage.setItem(STORAGE_KEY);
-  // console.log(formData);
-  // return formData;
+  };
+  save(refs.STORAGE_KEY, formData);
 }
 
 function onLoadInput() {
@@ -34,14 +37,12 @@ function onLoadInput() {
   // if (loadInput.email) {
   //   refs.form.email.value = loadInput.email;
   //   refs.form.message.value = loadInput.message;
-  //   console.log(refs.form.email.value);
+  //   //   console.log(refs.form.email.value);
   // }
   try {
     refs.form.email.value = loadInput.email;
     refs.form.message.value = loadInput.message;
   } catch (error) {
-    // console.log('Local Storage is empty');
+    console.log('Local Storage is empty');
   }
 }
-
-// console.log(formData);
